@@ -1,2 +1,2 @@
-# real-homework2
-Repository for homework2 project
+# real homework1
+Repository for homework1 

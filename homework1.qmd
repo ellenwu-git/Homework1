@@ -1,0 +1,69 @@
+---
+title: "ECON 470 Homework 1"
+author: "Ellen Wu"
+format: pdf
+execute:
+    echo: false
+---
+# The link to my repository: 
+# 1. Provide a table of the count of plans under each plan type
+
+```{python, echo: false}
+import pandas as pd
+from IPython.display import Markdown, display
+import warnings
+warnings.simplefilter('ignore')
+
+# Read output datasets
+full_ma_data = pd.read_csv('/Users/ellenwu/econ470/Homework1/data/output/full_ma_data.csv', encoding='ISO-8859-1')
+
+# Pivot table to get the number of plans per type and year
+plans_per_type = full_ma_data.pivot_table(index='plan_type', columns='year', values='planid', aggfunc='count')
+
+# Change the name of the index
+plans_per_type.index.name = 'Plan Type'
+
+# Sort values
+plans_per_type = plans_per_type.sort_values(by=2015, ascending=False)
+
+# Display the table
+display(Markdown(plans_per_type.to_markdown()))
+```
+
+
+```{python, echo : false}
+final_ma_data = full_ma_data[(full_ma_data['snp'] == "No") & (full_ma_data['eghp'] == "No") & ~full_ma_data['planid'].astype(str).str.startswith("8")]
+```
+
+# 2. Provide a table of the average enrollments for each plan type in 2015
+
+```{python, echo : false}
+# Exluce SNP and EGHP plans, and plans between 800 and 899
+final_ma_data = full_ma_data[(full_ma_data['snp'] == "No") & (full_ma_data['eghp'] == "No") & ((full_ma_data['planid'] < 800) | (full_ma_data['planid'] >= 900))]
+plans_per_type = final_ma_data.pivot_table(index='plan_type', columns='year', values='planid', aggfunc='count')
+# Change the name of the index
+plans_per_type.index.name = 'Plan Type'
+# Sort values
+plans_per_type = plans_per_type.sort_values(by=2015, ascending=False)
+# Display the table
+display(Markdown(plans_per_type.to_markdown()))
+```
+# 3. Provide a table of the average enrollments for each plan type in 2015 
+```{python}
+# Assuming final_ma_data is already defined and contains the necessary data
+# Replace missing values in 'avg_enrollment' with 0 or an appropriate value
+final_ma_data['avg_enrollment'] = final_ma_data['avg_enrollment'].fillna(0)
+
+# Pivot table to get the average enrollment per plan type and year
+enrollment_per_type = final_ma_data.groupby('plan_type')['avg_enrollment'].agg(['count', 'mean'])
+
+# Change the name of the index and columns
+enrollment_per_type.index.name = 'Plan Type'
+enrollment_per_type.columns = ['Count', 'Avg Enrollment']
+
+# Sort values and format
+enrollment_per_type = enrollment_per_type.round(0).sort_values(by='Count', ascending=False)
+
+# Display the table
+display(Markdown(enrollment_per_type.to_markdown()))
+```
